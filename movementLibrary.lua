@@ -1,7 +1,16 @@
+
+function testFunction()
+    turtle.dig()
+    turtle.digUp()
+end
+
 --for testing purposes
 function main()
+    
+    forEach[1] = testFunction
+
     toggleRecord()
-    move("left", 5, "forward")
+    move(10, "forward")
     returnToStart()
     toggleRecord()
 end
@@ -15,8 +24,13 @@ doLogging = true
  --]]
 doRecord = false
 
+extraExecuteBefore = true
+
 --a list holding all of the movements that were recorded
 recordedMovement={}
+
+--
+forEach={}
 
 --[[
  * a table that has the possibile movement options of the turtle
@@ -52,7 +66,7 @@ returnTable={
 }
 
 function move(...)
-    for i=1,table.getn(arg)-1 do
+    for i=1,table.getn(arg) do
         i = f(arg,i)
     end
 end
@@ -76,6 +90,13 @@ function f(input, num)
     return num + 1
 end
 
+function loopExtraExecute()
+    for i=1,table.getn(forEach) do
+        extraFunction = forEach[i]
+        extraFunction()
+    end
+end
+
 --Function that will take in a string and use it to get a function that does that movement
 function execute(direction)
     --Gets the function as a firstclass memeber by using the direction as the key of the lookuptable
@@ -86,6 +107,12 @@ function execute(direction)
         return
     end
     log("now doing the "..direction.." movement")
+
+    --loop over all the extra functions added in the foreach array before
+    if extraExecuteBefore then
+        loopExtraExecute()
+    end
+
     --do the movement 
     func()
 end
