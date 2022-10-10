@@ -1,6 +1,9 @@
 --for testing purposes
 function main()
-    execute("forward")    
+    toggleRecord()
+    move("left", 5, "forward")
+    returnToStart()
+    toggleRecord()
 end
 
 --boolean to determin if this programm should log whats done or not
@@ -49,12 +52,28 @@ returnTable={
 }
 
 function move(...)
-    if arg[1] == nil then
-        return
+    for i=1,table.getn(arg)-1 do
+        i = f(arg,i)
     end
-    for index,key in pairs(arg) do
-        execute(key)
+end
+
+--TODO CHANGE FUNCTION NAME
+function f(input, num)
+    --Checks if the input is not a number
+    if type(input[num]) ~= "number" then
+        --if it isn´t then execute the function at the given spot in the array
+        execute(input[num])
+        --indication no change in the current array spot
+        return num
     end
+
+    --since the input at num is now confirmed to be a number loop so many times 
+    for j=1,input[num] do
+        --execute the function at num + 1
+        execute(input[num+1])
+    end
+    --indicate to the outside that the function next in the array has also been executed
+    return num + 1
 end
 
 --Function that will take in a string and use it to get a function that does that movement
@@ -63,10 +82,10 @@ function execute(direction)
     func = movementLookupTable[direction]
     --if the function doesn´t exsist for the key then just break out of the function
     if func == nil then
-        log("funtion not found")
+        log("function not found")
         return
     end
-    log("now doing the "..direction.."movement")
+    log("now doing the "..direction.." movement")
     --do the movement 
     func()
 end
@@ -75,7 +94,7 @@ end
 function toggleRecord()
     --takes the opposite value of doRecord
     doRecord = (not doRecord) 
-    log("toggle recording to "..doRecord)
+    log("toggle recording to "..tostring(doRecord))
 end
 
 --Function that is recording the movement
