@@ -1,25 +1,25 @@
 --for testing purposes
 function main()
-    
+    execute("forward")    
 end
 
 --boolean to determin if this programm should log whats done or not
 doLogging = true
 
-/*
+--[[
  * boolean that isUsed to determin is the movement will be recorded so it could be used in a
  * go back methode to reverse the movement or to log the movement done
- */
+ --]]
 doRecord = false
 
 --a list holding all of the movements that were recorded
 recordedMovement={}
 
-/*
+--[[
  * a table that has the possibile movement options of the turtle
  * each direction e.g. up, down, forward, lookingRight, lookingLeft, etc...
  * linking to a function doing that thing
- */
+ --]]
 movementLookupTable={
     ["up"]=turtle.up,
     ["forward"]=turtle.forward,
@@ -30,7 +30,7 @@ movementLookupTable={
 }
 
 
-/*
+--[[
  * a table that has the opposite of each possibile movement options of the turtle
  * each direction e.g. up, down, forward, lookingRight, lookingLeft, etc...
  * linking to a function doing that does the opposite of that thing
@@ -39,7 +39,7 @@ movementLookupTable={
  * with the help of this table we pass these in and get the invers of it
  * the invers of this is example is going to be {down, down, back, right, back}
  * this can be used to for example return to where we started to record
- */
+ --]]
 returnTable={
     ["up"]      = turtle.down,
     ["forward"] = turtle.back,
@@ -53,12 +53,12 @@ function move(...)
         return
     end
     for index,key in pairs(arg) do
-        do(key)
+        execute(key)
     end
 end
 
 --Function that will take in a string and use it to get a function that does that movement
-function do(direction)
+function execute(direction)
     --Gets the function as a firstclass memeber by using the direction as the key of the lookuptable
     func = movementLookupTable[direction]
     --if the function doesn´t exsist for the key then just break out of the function
@@ -87,11 +87,11 @@ function record(movement)
     recordedMovement[table.getn(recordedMovement)] = movement
 end
 
-/*
+--[[
  * function that walks back to the start of the recording
  * by traversing the every single step in the recordedMovements and then using the
  * return table to get the invers of the taken action
- */
+ --]]
 function returnToStart()
     --toggle the recording because we dont want to record the going back as part of the path
     toggleRecord()
@@ -106,10 +106,10 @@ function returnToStart()
     end
 end
 
-/*
+--[[
  * walks the recorded path
  * used to return after the return from the start
- */
+ --]]
 function traversRecordedPath()
     --for every single function in the recordedMovements
     for i=1,table.getn(recordedMovement) do
