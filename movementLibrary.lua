@@ -1,19 +1,12 @@
-
-function testFunction()
-    turtle.dig()
-    turtle.digUp()
-end
-
 --for testing purposes
 function main()
-    
-    forEach[1] = testFunction
-
     toggleRecord()
-    move(10, "forward")
+    move("left", 5, "forward")
     returnToStart()
     toggleRecord()
 end
+
+----------------------------------------------------------------------------------------------
 
 --boolean to determin if this programm should log whats done or not
 doLogging = true
@@ -37,13 +30,14 @@ forEach={}
  * each direction e.g. up, down, forward, lookingRight, lookingLeft, etc...
  * linking to a function doing that thing
  --]]
-movementLookupTable={
-    ["up"]=turtle.up,
-    ["forward"]=turtle.forward,
-    ["down"]=turtle.down,
-    ["back"]=turtle.back,
-    ["left"]=turtle.turnLeft,
-    ["right"]=turtle.turnRight
+ movementLookupTable={
+    ["up"]      = turtle.up,
+    ["forward"] = turtle.forward,
+    ["fw"]      = turtle.forward,
+    ["down"]    = turtle.down,
+    ["back"]    = turtle.back,
+    ["left"]    = turtle.turnLeft,
+    ["right"]   = turtle.turnRight
 }
 
 
@@ -60,36 +54,18 @@ movementLookupTable={
 returnTable={
     ["up"]      = turtle.down,
     ["forward"] = turtle.back,
+    ["fw"]      = turtle.back,
     ["down"]    = turtle.up,
+    ["back"]    = turtle.forward,
     ["left"]    = turtle.turnRight,
     ["right"]   = turtle.turnLeft
 }
 
-function move(...)
-    for i=1,table.getn(arg) do
-        i = f(arg,i)
-    end
-end
+----------------------------------------------------------------------------------------------
 
---TODO CHANGE FUNCTION NAME
-function f(input, num)
-    --Checks if the input is not a number
-    if type(input[num]) ~= "number" then
-        --if it isn´t then execute the function at the given spot in the array
-        execute(input[num])
-        --indication no change in the current array spot
-        return num
-    end
+--Abstraction of different Input commands and extra input functions
 
-    --since the input at num is now confirmed to be a number loop so many times 
-    for j=1,input[num] do
-        --execute the function at num + 1
-        execute(input[num+1])
-    end
-    --indicate to the outside that the function next in the array has also been executed
-    return num + 1
-end
-
+--Loops over the forEach table and uses the function in the spot
 function loopExtraExecute()
     for i=1,table.getn(forEach) do
         extraFunction = forEach[i]
@@ -107,15 +83,99 @@ function execute(direction)
         return
     end
     log("now doing the "..direction.." movement")
-
     --loop over all the extra functions added in the foreach array before
     if extraExecuteBefore then
         loopExtraExecute()
     end
-
     --do the movement 
     func()
+    --record the movement
+    record(direction)
 end
+
+
+
+----------------------------------------------------------------------------------------------
+
+--Higherlevel Checks to see what to do given different inputs
+
+function functionCheck(inputArray, inputN)
+    operationFunction = operatorTable[type(inputArray[inputN])]
+    return operationFunction(inputArray, inputN)
+end
+
+function executeBooleanFunction(inputArray,inputN)
+    --Check if there is a String in the next ArrayElement
+    if inputArray[inputN+1] == nil then
+        --If not break out of the function
+        return inputN
+    end
+    --Get the pointer to the function
+    booleanFunction = inputArray[inputN]
+
+    boolean = booleanFunction()
+    log("The boolean before is "..tostring(boolean))
+    --loop while this function is true
+    while boolean == true do
+        --execute the function at num + 1
+        execute(inputArray[inputN+1])
+        --
+        boolean = booleanFunction()
+        log("The boolean after is "..tostring(boolean))
+    end
+
+    log("broke out of the loop")
+    --indicate to the outside that the function next in the array has also been executed
+    return inputN + 1
+end
+
+--Execute a Function a number of times
+function executeNumberFunction(inputArray, inputN)
+    --Check if there is a String in the next ArrayElement
+    if inputArray[inputN+1] == nil then
+        --If not break out of the function
+        return inputN
+    end
+
+    if inputArray[inputN] < 1 then
+        return inputN + 1
+    end
+
+    --since the input at num is now confirmed to be a number loop so many times 
+    for i=1,inputArray[inputN]-1 do
+        --execute the function at num + 1
+        execute(inputArray[inputN+1])
+    end
+    --indicate to the outside that the function next in the array has also been executed
+    return inputN + 1
+end
+
+function executeFunction(input, num) 
+    --if it isn´t then execute the function at the given spot in the array
+    execute(input[num])
+    --indication no change in the current array spot
+    return num
+end  
+
+operatorTable={
+    ["function"]= executeBooleanFunction,
+    ["number"]  = executeNumberFunction,
+    ["string"]  = executeFunction
+}
+
+-----------------------------------------------------------------------------------------------
+
+--High level Implementation of the Past paragraph
+function move(...)
+    for i=1,table.getn(arg) do
+        i = functionCheck(arg,i)
+        if i >= table.getn(arg) then
+            return
+        end
+    end
+end
+
+----------------------------------------------------------------------------------------------
 
 --toggles the doRecord boolean to the opposite value to turn on or off the recording
 function toggleRecord()
@@ -126,12 +186,14 @@ end
 
 --Function that is recording the movement
 function record(movement)
-    if not doRecord then
+    if doRecord == false then
         log("recording is not enabled")
         return
     end
-    recordedMovement[table.getn(recordedMovement)] = movement
+    recordedMovement[table.getn(recordedMovement)+1] = movement
 end
+
+----------------------------------------------------------------------------------------------
 
 --[[
  * function that walks back to the start of the recording
@@ -142,9 +204,11 @@ function returnToStart()
     --toggle the recording because we dont want to record the going back as part of the path
     toggleRecord()
     log("returning to start")
-    --for every single function in the recordedMovements
-    for i=1,table.getn(recordedMovement) do
-        log("now executing "..recordedMovement[i])
+    log("length of the recordedMovements "..table.getn(recordedMovement))
+    --for every single function in the recordedMovements loop over it backwards, 
+    --because the last movement done must be the first one now to return
+    for i=table.getn(recordedMovement), 1, -1 do
+        log("now executing inverse of "..recordedMovement[i])
         --get the function that does the invers of the movement
         func = returnTable[recordedMovement[i]]
         --execute the function
@@ -166,6 +230,8 @@ function traversRecordedPath()
     end
 end
 
+----------------------------------------------------------------------------------------------
+
 --simple logging function controlled by the doLogging boolean
 function log(input)
     --check if logging is enabled
@@ -177,10 +243,15 @@ function log(input)
     print(input)
 end
 
+function addExtraFunction(inputFunction)
+    forEach[table.getn(forEach)+1] = inputFunction
+end
+
 --clears the recorded path table by creating a new table and assigning it
 function clearRecord()
     recordedMovement = {}
 end
 
---call of the main function for testing purposes
-main()
+return {move=move, toggleRecord=toggleRecord, addFunction=addExtraFunction, returnToStart=returnToStart, clearRecord=clearRecord}
+
+----------------------------------------------------------------------------------------------
