@@ -15,6 +15,7 @@
       devShells.${system}.default = pkgs.mkShell {
         nativeBuildInputs = with pkgs; [
           luajitPackages.fennel
+          fennel-ls
         ];
       };
     };
