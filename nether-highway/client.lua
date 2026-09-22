@@ -26,7 +26,7 @@ local function init()
     local id, msg = rednet.receive("nether-highway")
     local setup_3f = (msg == "setup")
     if setup_3f then
-      rednet.send(server, "configured", "nether-highway")
+      rednet.send(id, "configured", "nether-highway")
       check_edges()
       server = id
       configured_3f = true
