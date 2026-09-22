@@ -1,3 +1,4 @@
+(var len 0)
 (var configured? nil)
 (var clients 0)
 (var clients-done 0)
@@ -24,11 +25,11 @@
 (fn init []
   (peripheral.find :modem rednet.open)
   (rednet.broadcast :setup :nether-highway)
-  (parallel.waitForAny handle-timer handle-registering))
+  (parallel.waitForAny handle-timer handle-registering)
+  (set len (read "How long should the highway be: ")))
 
 (fn update []
-  (var running? true)
-  (while running?
+  (for [i 1 len]
     (let [(id message) (rednet.receive "nether-highway")
           is-client? (. clients id)]
       (when is-client?
