@@ -23,7 +23,7 @@
     (let [(id msg) (rednet.receive :nether-highway)
           setup? (= msg :setup)]
       (when setup?
-        (rednet.send server :configured :nether-highway)
+        (rednet.send id :configured :nether-highway)
         (check-edges)
         (set server id)
         (set configured? true)))))
