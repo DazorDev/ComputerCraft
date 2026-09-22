@@ -29,6 +29,7 @@ local function init()
     if setup_3f then
       edge_turtle_3f()
       configured_3f = true
+      server = id
     else
     end
     rednet.send(server, "configured", "nether-highway")

@@ -23,7 +23,8 @@
           setup? (= msg :setup)]
       (when setup?
         (edge-turtle?)
-        (set configured? true))
+        (set configured? true)
+        (set server id))
      (rednet.send server :configured :nether-highway))))
 
 (fn finished-step []
