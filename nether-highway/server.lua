@@ -23,6 +23,7 @@ local function handle_registering()
   while not configured_3f do
     local id, message = rednet.receive()
     local register_turtle_3f = (message == "configured")
+    print(string.format("Turtle: %s registered", id))
     if register_turtle_3f then
       clients = (clients + 1)
     else
@@ -34,11 +35,13 @@ local function init()
   peripheral.find("modem", rednet.open)
   rednet.broadcast("setup", "nether-highway")
   parallel.waitForAny(handle_timer, handle_registering)
-  len = read("How long should the highway be: ")
-  return nil
+  print("Finished registering")
+  print("Length of Highway: ")
+  len = read()
+  return print("Finished configuring")
 end
 local function update()
-  for i = 1, len do
+  for _ = 1, len do
     local id, message = rednet.receive("nether-highway")
     local is_client_3f = clients[id]
     if is_client_3f then

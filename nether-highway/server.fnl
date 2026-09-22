@@ -19,6 +19,7 @@
   (while (not configured?)
     (let [(id message) (rednet.receive)
           register-turtle? (= message :configured)]
+      (print (string.format "Turtle: %s registered" id))
       (when register-turtle?
         (set clients (+ clients 1))))))
 
@@ -26,10 +27,13 @@
   (peripheral.find :modem rednet.open)
   (rednet.broadcast :setup :nether-highway)
   (parallel.waitForAny handle-timer handle-registering)
-  (set len (read "How long should the highway be: ")))
+  (print "Finished registering")
+  (print "Length of Highway: ")
+  (set len (read))
+  (print "Finished configuring"))
 
 (fn update []
-  (for [i 1 len]
+  (for [_ 1 len]
     (let [(id message) (rednet.receive "nether-highway")
           is-client? (. clients id)]
       (when is-client?
