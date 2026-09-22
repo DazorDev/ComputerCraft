@@ -54,6 +54,8 @@
       (when server?
         (case msg
           :done (set running? nil)
-          :continue (step))))))
+          :continue (step)))))
+ (peripheral.find :modem rednet.open))
+
 (when (not ...)
   (main))

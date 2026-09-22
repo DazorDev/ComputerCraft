@@ -21,7 +21,7 @@ local function handle_timer()
 end
 local function handle_registering()
   while not configured_3f do
-    local id, message = rednet.receive()
+    local id, message = rednet.receive("nether-highway")
     local register_turtle_3f = (message == "configured")
     print(string.format("Turtle: %s registered", id))
     if register_turtle_3f then

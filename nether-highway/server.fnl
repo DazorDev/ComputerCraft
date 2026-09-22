@@ -17,7 +17,7 @@
 
 (fn handle-registering []
   (while (not configured?)
-    (let [(id message) (rednet.receive)
+    (let [(id message) (rednet.receive :nether-highway)
           register-turtle? (= message :configured)]
       (print (string.format "Turtle: %s registered" id))
       (when register-turtle?

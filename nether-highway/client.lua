@@ -72,7 +72,7 @@ local function main()
     else
     end
   end
-  return nil
+  return peripheral.find("modem", rednet.open)
 end
 if not ... then
   return main()
