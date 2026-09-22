@@ -41,6 +41,7 @@ end
 local function step()
   turtle.dig()
   turtle.digUp()
+  turtle.placeDow()
   if left_edge_3f then
     turtle.turnLeft()
     turtle.place()

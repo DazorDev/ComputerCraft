@@ -34,6 +34,7 @@
 (fn step []
   (turtle.dig)
   (turtle.digUp)
+  (turtle.placeDow)
   (when left-edge?
     (turtle.turnLeft)
     (turtle.place)
