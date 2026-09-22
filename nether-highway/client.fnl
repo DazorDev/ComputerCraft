@@ -6,7 +6,7 @@
     (and res (or (= block.name "computercraft:turtle_normal")
                  (= block.name "computercraft:turtle_advanced")))))
 
-(fn edge-turtle? []
+(fn check-edges []
   (turtle.turnLeft)
   (when (not (turtle-block?))
     (set left-edge? true))
@@ -23,10 +23,10 @@
     (let [(id msg) (rednet.receive :nether-highway)
           setup? (= msg :setup)]
       (when setup?
-        (edge-turtle?)
-        (set configured? true)
-        (set server id))
-     (rednet.send server :configured :nether-highway))))
+        (rednet.send server :configured :nether-highway)
+        (check-edges)
+        (set server id)
+        (set configured? true)))))
 
 (fn finished-step []
   (rednet.send server "done" "nether-highway"))

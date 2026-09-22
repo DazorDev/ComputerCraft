@@ -5,7 +5,7 @@ local function turtle_block_3f()
   local res, block = turtle.inspect()
   return (res and ((block.name == "computercraft:turtle_normal") or (block.name == "computercraft:turtle_advanced")))
 end
-local function edge_turtle_3f()
+local function check_edges()
   turtle.turnLeft()
   if not turtle_block_3f() then
     left_edge_3f = true
@@ -26,12 +26,12 @@ local function init()
     local id, msg = rednet.receive("nether-highway")
     local setup_3f = (msg == "setup")
     if setup_3f then
-      edge_turtle_3f()
-      configured_3f = true
+      rednet.send(server, "configured", "nether-highway")
+      check_edges()
       server = id
+      configured_3f = true
     else
     end
-    rednet.send(server, "configured", "nether-highway")
   end
   return nil
 end
