@@ -1,3 +1,4 @@
+local len = 0
 local configured_3f = nil
 local clients = 0
 local clients_done = 0
@@ -32,11 +33,12 @@ end
 local function init()
   peripheral.find("modem", rednet.open)
   rednet.broadcast("setup", "nether-highway")
-  return parallel.waitForAny(handle_timer, handle_registering)
+  parallel.waitForAny(handle_timer, handle_registering)
+  len = read("How long should the highway be: ")
+  return nil
 end
 local function update()
-  local running_3f = true
-  while running_3f do
+  for i = 1, len do
     local id, message = rednet.receive("nether-highway")
     local is_client_3f = clients[id]
     if is_client_3f then
