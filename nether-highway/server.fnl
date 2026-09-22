@@ -8,7 +8,7 @@
   (while (not timer-done?)
     (let [(_ id) (os.pullEvent "timer")]
       (when (= id timer-id)
-        (set timer-done true)))))
+        (set timer-done? true)))))
 
 (fn handle-timer []
   (let [timer (os.startTimer 1)]
