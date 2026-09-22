@@ -7,7 +7,7 @@ local function wait_for_timer(timer_id)
   while not timer_done_3f do
     local _, id = os.pullEvent("timer")
     if (id == timer_id) then
-      __fnl_global__timer_2ddone = true
+      timer_done_3f = true
     else
     end
   end
