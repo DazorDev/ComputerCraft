@@ -15,10 +15,9 @@ local function edge_turtle_3f()
   turtle.turnRight()
   if not turtle_block_3f() then
     right_edge_3f = true
-    return nil
   else
-    return nil
   end
+  return turtle.turnLeft()
 end
 local function init()
   peripheral.find("modem", rednet.open)

@@ -13,7 +13,8 @@
   (turtle.turnRight)
   (turtle.turnRight)
   (when (not (turtle-block?))
-    (set right-edge? true)))
+    (set right-edge? true))
+  (turtle.turnLeft))
 
 (fn init []
   (peripheral.find :modem rednet.open)
