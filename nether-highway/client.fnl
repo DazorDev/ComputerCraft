@@ -19,13 +19,12 @@
   (peripheral.find :modem rednet.open)
   (var configured? nil)
   (while (not configured?)
-    (peripheral.find :modem rednet.open)
     (let [(id msg) (rednet.receive :nether-highway)
           setup? (= msg :setup)]
       (when setup?
         (edge-turtle?)
-        (set configured? true)))
-    (rednet.send server :configured :nether-highway)))
+        (set configured? true))
+     (rednet.send server :configured :nether-highway))))
 
 (fn finished-step []
   (rednet.send server "done" "nether-highway"))

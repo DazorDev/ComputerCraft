@@ -24,15 +24,12 @@ local function init()
   peripheral.find("modem", rednet.open)
   local configured_3f = nil
   while not configured_3f do
-    peripheral.find("modem", rednet.open)
-    do
-      local id, msg = rednet.receive("nether-highway")
-      local setup_3f = (msg == "setup")
-      if setup_3f then
-        edge_turtle_3f()
-        configured_3f = true
-      else
-      end
+    local id, msg = rednet.receive("nether-highway")
+    local setup_3f = (msg == "setup")
+    if setup_3f then
+      edge_turtle_3f()
+      configured_3f = true
+    else
     end
     rednet.send(server, "configured", "nether-highway")
   end
