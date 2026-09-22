@@ -1,19 +1,6 @@
 (var configured? nil)
 (var clients 0)
 (var clients-done 0)
-(fn main []
-  (init)
-  (update))
-
-(fn init []
-  (peripheral.find :modem rednet.open)
-  (rednet.broadcast :setup :nether-highway)
-  (parallel.waitForAny handle-timer handle-registering))
-
-(fn handle-timer []
-  (let [timer (os.startTimer 1)]
-    (wait-for-timer timer)
-    (set configured? true)))
 
 (fn wait-for-timer [timer-id]
   (var timer-done? nil)
@@ -22,12 +9,22 @@
       (when (= id timer-id)
         (set timer-done true)))))
 
+(fn handle-timer []
+  (let [timer (os.startTimer 1)]
+    (wait-for-timer timer)
+    (set configured? true)))
+
 (fn handle-registering []
   (while (not configured?)
     (let [(id message) (rednet.receive)
           register-turtle? (= message :configured)]
       (when register-turtle?
         (set clients (+ clients 1))))))
+
+(fn init []
+  (peripheral.find :modem rednet.open)
+  (rednet.broadcast :setup :nether-highway)
+  (parallel.waitForAny handle-timer handle-registering))
 
 (fn update []
   (var running? true)
@@ -40,5 +37,9 @@
           (set clients-done 0)
           (rednet.broadcast "continue" :nether-highway))))))
 
-(when ...
+(fn main []
+  (init)
+  (update))
+
+(when (not ...)
   (main))

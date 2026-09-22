@@ -75,7 +75,7 @@ local function main()
   end
   return nil
 end
-if ... then
+if not ... then
   return main()
 else
   return nil

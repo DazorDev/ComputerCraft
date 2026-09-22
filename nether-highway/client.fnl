@@ -52,5 +52,5 @@
         (case msg
           :done (set running? nil)
           :continue (step))))))
-(when ...
+(when (not ...)
   (main))

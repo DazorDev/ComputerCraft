@@ -1,21 +1,6 @@
 local configured_3f = nil
 local clients = 0
 local clients_done = 0
-local function main()
-  init()
-  return update()
-end
-local function init()
-  peripheral.find("modem", rednet.open)
-  rednet.broadcast("setup", "nether-highway")
-  return parallel.waitForAny(__fnl_global__handle_2dtimer, __fnl_global__handle_2dregistering)
-end
-local function handle_timer()
-  local timer = os.startTimer(1)
-  __fnl_global__wait_2dfor_2dtimer(timer)
-  configured_3f = true
-  return nil
-end
 local function wait_for_timer(timer_id)
   local timer_done_3f = nil
   while not timer_done_3f do
@@ -25,6 +10,12 @@ local function wait_for_timer(timer_id)
     else
     end
   end
+  return nil
+end
+local function handle_timer()
+  local timer = os.startTimer(1)
+  wait_for_timer(timer)
+  configured_3f = true
   return nil
 end
 local function handle_registering()
@@ -37,6 +28,11 @@ local function handle_registering()
     end
   end
   return nil
+end
+local function init()
+  peripheral.find("modem", rednet.open)
+  rednet.broadcast("setup", "nether-highway")
+  return parallel.waitForAny(handle_timer, handle_registering)
 end
 local function update()
   local running_3f = true
@@ -55,7 +51,11 @@ local function update()
   end
   return nil
 end
-if ... then
+local function main()
+  init()
+  return update()
+end
+if not ... then
   return main()
 else
   return nil
