@@ -21,6 +21,7 @@ local function edge_turtle_3f()
   end
 end
 local function init()
+  peripheral.find("modem", rednet.open)
   local configured_3f = nil
   while not configured_3f do
     peripheral.find("modem", rednet.open)

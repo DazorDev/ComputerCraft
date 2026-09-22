@@ -16,6 +16,7 @@
     (set right-edge? true)))
 
 (fn init []
+  (peripheral.find :modem rednet.open)
   (var configured? nil)
   (while (not configured?)
     (peripheral.find :modem rednet.open)
