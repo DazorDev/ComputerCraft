@@ -60,6 +60,7 @@ local function step()
   return finished_step()
 end
 local function main()
+  init()
   local running_3f = true
   while running_3f do
     local id, msg = rednet.receive("nether-highway")

@@ -45,6 +45,7 @@
   (finished-step))
 
 (fn main []
+  (init)
   (var running? true)
   (while running?
     (let [(id msg) (rednet.receive "nether-highway")
