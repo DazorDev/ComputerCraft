@@ -36,36 +36,28 @@ local function init()
   return nil
 end
 local function or_wait(func)
-  while not func() do
+  while (turtle.getItemCount() == 0) do
     sleep(1)
   end
-  return nil
+  return func()
 end
 local function step()
   turtle.dig()
   turtle.digUp()
-  while not turtle.placeDown() do
-    sleep(1)
-  end
+  or_wait(turtle.placeDown)
   if left_edge_3f then
     turtle.turnLeft()
-    while not turtle.place() do
-      sleep(1)
-    end
+    or_wait(turtle.place)
     turtle.turnRight()
   else
   end
   if right_edge_3f then
     turtle.turnRight()
-    while not turtle.place() do
-      sleep(1)
-    end
+    or_wait(turtle.place)
     turtle.turnLeft()
   else
   end
-  while not turtle.forward() do
-    sleep(1)
-  end
+  or_wait(turtle.forward)
   return rednet.send(server, "done", "nether-highway")
 end
 local function main()

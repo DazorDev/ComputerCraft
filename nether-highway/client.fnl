@@ -33,22 +33,23 @@
         (set configured? true)))))
 
 (fn or-wait [func]
-  (while (not (func))
-    (sleep 1)))
+  (while (= (turtle.getItemCount) 0)
+    (sleep 1))
+  (func))
 
 (fn step []
   (turtle.dig)
   (turtle.digUp)
-  (until-true turtle.placeDown)
+  (or-wait turtle.placeDown)
   (when left-edge?
     (turtle.turnLeft)
-    (until-true turtle.place)
+    (or-wait turtle.place)
     (turtle.turnRight))
   (when right-edge?
     (turtle.turnRight)
-    (until-true turtle.place)
+    (or-wait turtle.place)
     (turtle.turnLeft))
-  (until-true turtle.forward)
+  (or-wait turtle.forward)
   (rednet.send server "done" "nether-highway"))
 
 (fn main []
