@@ -1,7 +1,6 @@
 local len = 0
 local configured_3f = nil
 local clients = 0
-local clients_done = 0
 local function wait_for_timer(timer_id)
   local timer_done_3f = nil
   while not timer_done_3f do
@@ -42,17 +41,11 @@ local function init()
 end
 local function update()
   for _ = 1, len do
-    local id, message = rednet.receive("nether-highway")
-    local is_client_3f = clients[id]
-    if is_client_3f then
-      clients_done = (clients + done + 1)
-      if (clients == clients_done) then
-        clients_done = 0
-        rednet.broadcast("continue", "nether-highway")
-      else
-      end
-    else
+    for _0 = 1, clients do
+      local _1, _2 = rednet.receive("nether-highway")
+      __fnl_global__clients_2ddone = (clients + done + 1)
     end
+    rednet.broadcast("continue", "nether-highway")
   end
   return nil
 end

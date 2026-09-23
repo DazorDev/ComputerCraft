@@ -1,7 +1,6 @@
 (var len 0)
 (var configured? nil)
 (var clients 0)
-(var clients-done 0)
 
 (fn wait-for-timer [timer-id]
   (var timer-done? nil)
@@ -34,13 +33,10 @@
 
 (fn update []
   (for [_ 1 len]
-    (let [(id message) (rednet.receive "nether-highway")
-          is-client? (. clients id)]
-      (when is-client?
-        (set clients-done (+ clients done 1))
-        (when (= clients clients-done)
-          (set clients-done 0)
-          (rednet.broadcast "continue" :nether-highway))))))
+    (for [_ 1 clients]
+      (let [(_ _) (rednet.receive :nether-highway)]
+        (set clients-done (+ clients done 1))))
+    (rednet.broadcast "continue" :nether-highway)))
 
 (fn main []
   (init)
