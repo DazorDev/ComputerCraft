@@ -1,3 +1,7 @@
+(macro until-true [func]
+  `(while (not (,func))
+     (sleep 1)))
+
 (var server nil)
 (var left-edge? nil)
 (var right-edge? nil)
@@ -28,19 +32,23 @@
         (set server id)
         (set configured? true)))))
 
+(fn or-wait [func]
+  (while (not (func))
+    (sleep 1)))
+
 (fn step []
   (turtle.dig)
   (turtle.digUp)
-  (turtle.placeDown)
+  (until-true turtle.placeDown)
   (when left-edge?
     (turtle.turnLeft)
-    (turtle.place)
+    (until-true turtle.place)
     (turtle.turnRight))
   (when right-edge?
     (turtle.turnRight)
-    (turtle.place)
+    (until-true turtle.place)
     (turtle.turnLeft))
-  (turtle.forward)
+  (until-true turtle.forward)
   (rednet.send server "done" "nether-highway"))
 
 (fn main []
