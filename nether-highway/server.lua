@@ -41,11 +41,10 @@ local function init()
 end
 local function update()
   for _ = 1, len do
-    for _0 = 1, clients do
-      local _1, _2 = rednet.receive("nether-highway")
-      __fnl_global__clients_2ddone = (clients + done + 1)
-    end
     rednet.broadcast("continue", "nether-highway")
+    for _0 = 1, clients do
+      rednet.receive("nether-highway")
+    end
   end
   return nil
 end

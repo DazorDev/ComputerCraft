@@ -33,10 +33,9 @@
 
 (fn update []
   (for [_ 1 len]
+    (rednet.broadcast "continue" :nether-highway)
     (for [_ 1 clients]
-      (let [(_ _) (rednet.receive :nether-highway)]
-        (set clients-done (+ clients done 1))))
-    (rednet.broadcast "continue" :nether-highway)))
+      (rednet.receive :nether-highway))))
 
 (fn main []
   (init)

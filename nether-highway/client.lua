@@ -35,13 +35,10 @@ local function init()
   end
   return nil
 end
-local function finished_step()
-  return rednet.send(server, "done", "nether-highway")
-end
 local function step()
   turtle.dig()
   turtle.digUp()
-  turtle.placeDow()
+  turtle.placeDown()
   if left_edge_3f then
     turtle.turnLeft()
     turtle.place()
@@ -55,7 +52,7 @@ local function step()
   else
   end
   turtle.forward()
-  return finished_step()
+  return rednet.send(server, "done", "nether-highway")
 end
 local function main()
   init()

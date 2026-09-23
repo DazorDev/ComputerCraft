@@ -28,13 +28,10 @@
         (set server id)
         (set configured? true)))))
 
-(fn finished-step []
-  (rednet.send server "done" "nether-highway"))
-
 (fn step []
   (turtle.dig)
   (turtle.digUp)
-  (turtle.placeDow)
+  (turtle.placeDown)
   (when left-edge?
     (turtle.turnLeft)
     (turtle.place)
@@ -44,7 +41,7 @@
     (turtle.place)
     (turtle.turnLeft))
   (turtle.forward)
-  (finished-step))
+  (rednet.send server "done" "nether-highway"))
 
 (fn main []
   (init)
