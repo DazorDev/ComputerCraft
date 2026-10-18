@@ -1,0 +1,11 @@
+local pearl_injector = {name = "redstone_relay_0", side = "front"}
+local generator_data = {{name = "redstone_relay_1", side = "front"}, {name = "redstone_relay_2", side = "front"}, {name = "redstone_relay_3", side = "front"}}
+local delta_ticks = 2
+local function main()
+  return peripheral.call(pearl_injector.name, "setOutput", pearl_injector.side, true)
+end
+if not ... then
+  return main()
+else
+  return nil
+end

@@ -1,0 +1,20 @@
+(macro redstone-relay [name side]
+  (assert-compile name "Name must be specified")
+  (assert-compile side "Side must be specified")
+  {: name : side})
+
+(local pearl-injector (redstone-relay "redstone_relay_0"
+                                      :front))
+(local generator-data [(redstone-relay "redstone_relay_1"
+                                       :front)
+                       (redstone-relay "redstone_relay_2"
+                                       :front)
+                       (redstone-relay "redstone_relay_3"
+                                       :front)])
+(local delta-ticks 2)
+
+(fn main []
+  (peripheral.call pearl-injector.name :setOutput pearl-injector.side))
+
+(when (not ...)
+  (main))
