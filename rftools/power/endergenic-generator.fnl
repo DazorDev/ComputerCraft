@@ -1,49 +1,5 @@
-;; (fn main []
-;;   (print "Starting Setup")
-;;   (print "Preparing Second Generator")
-;;   (peripheral.call (. generator-data 2 :name) :setOutput :front true)
-;;   (sleep 0.1)
-;;   (peripheral.call (. generator-data 2 :name) :setOutput :front false)
-;;   (sleep 0.5)
-;;   (print "Launching pearl")
-;;   (peripheral.call pearl-injector.name :setOutput pearl-injector.side true)
-;;   (sleep 0.1)
-;;   (peripheral.call pearl-injector.name :setOutput pearl-injector.side false)
-;;   (print "Completed Setup")
-;;   (sleep 1)
-;;   ;; (while true 
-;;   ;;   (print "Preparing Second Generator")
-;;   ;;   (peripheral.call (. generator-data 2 :name) :setOutput :front true)
-;;   ;;   (sleep 0.1)
-;;   ;;   (peripheral.call (. generator-data 2 :name) :setOutput :front false)
-;;   ;;   (print "Prepared, Waiting")
-;;   ;;   (sleep 0.5)
-;;   ;;   (print "Launching from first generator")
-;;   ;;   (peripheral.call (. generator-data 1 :name) :setOutput :front true)
-;;   ;;   (sleep 0.1)
-;;   ;;   (peripheral.call (. generator-data 1 :name) :setOutput :front false)
-;;   ;;   (print "Launched")
-;;   ;;   (print "Preparing Third Generator")
-;;   ;;   (peripheral.call (. generator-data 3 :name) :setOutput :front true)
-;;   ;;   (sleep 0.1)
-;;   ;;   (peripheral.call (. generator-data 3 :name) :setOutput :front false)
-;;   ;;   (print "Pepared, Waiting")
-;;   ;;   (sleep 0.5)
-;;   ;;   (print "Launching from second generator")
-;;   ;;   (peripheral.call (. generator-data 2 :name) :setOutput :front true)
-;;   ;;   (sleep 0.1)
-;;   ;;   (peripheral.call (. generator-data 2 :name) :setOutput :front false)
-
-;;   ;;   (print "Preparing first Generator")
-;;   ;;   (peripheral.call (. generator-data 1 :name) :setOutput :front true)
-;;   ;;   (sleep 0.1)
-;;   ;;   (peripheral.call (. generator-data 1 :name) :setOutput :front false)
-;;   ;;   (sleep 0.5)
-;;   ;;   (peripheral.call (. generator-data 3 :name) :setOutput :front true)
-;;   ;;   (sleep 0.1)
-;;   ;;   (peripheral.call (. generator-data 3 :name) :setOutput :front false))
-;;   )
-
+(local start-alarms [])
+(local stop-alarms [])
 (macro redstone-relay [name side]
   (assert-compile name "Name must be specified")
   (assert-compile side "Side must be specified")
@@ -52,54 +8,72 @@
 (macro ticks->time [number]
   (* number 0.05))
 
-(macro pulse [redstone-relay duration]
-  `(let [{:name name# :side side#} ,redstone-relay]
-     (peripheral.call name# :setOutput side# true)
-     (sleep (* ,duration 0.05))
-     (peripheral.call name# :setOutput side# false)))
+(fn relay [number]
+  (.. "redstone_relay_" (tostring number)))
 
-(local pearl-injector (redstone-relay "redstone_relay_8"
-                                      :front))
-(local generator-data [(redstone-relay "redstone_relay_1"
-                                       :front)
-                       (redstone-relay "redstone_relay_7"
-                                       :front)
-                       (redstone-relay "redstone_relay_3"
-                                       :front)])
+(fn generator [number]
+  (.. "rftoolspower:endergenic_" (tostring number)))
+
+(local alarms [{:pid nil
+                :tick 1
+                :name (relay 4)
+                :side :front}
+               {:pid nil
+                :tick 10
+                :name (relay 4)
+                :side :left}
+               {:pid nil
+                :tick 12
+                :name (relay 4)
+                :side :front}
+               {:pid nil
+                :tick 13
+                :name (relay 4)
+                :side :right}
+               {:pid nil
+                :tick 3
+                :name (relay 4)
+                :side :right}
+               {:pid nil
+                :tick 4
+                :name (relay 4)
+                :side :back}])
+
+(fn pulse [relay]
+  (let [{: name : side } relay]
+    (peripheral.call name :setOutput side true)
+    (set (. stop-alarms (os.setAlarm (+ (os.time :ingame) 0.001))) relay)))
+
 (local optimal-ticks 10)
 (local delta-ticks 2)
 (local redstone-pulse-ticks 2)
 
-(local tasks [])
-
 (fn main []
-  (sleep 3)
-  (let [[first second third] generator-data]
-    ;; "Preparing second"
-    ;; (pulse second 2)
-    ;; (sleep (ticks->time 6))
-    ;; "Launching first"
-    ;; (pulse pearl-injector 2)
-    ;; (while true
-    ;;   "Preparing third"
-    ;;   (pulse third 2)
-    ;;   (sleep (ticks->time 6))
-    ;;   "Launching second"
-    ;;   (pulse second 2)
-    ;;   "Preparing first"
-    ;;   (pulse first 2)
-    ;;   (sleep (ticks->time 6))
-    ;;   "Launching third"
-    ;;   (pulse third 2)
-    ;;   "Preparing second"
-    ;;   (pulse second 2)
-    ;;   (sleep (ticks->time 6))
-    ;;   "Launching first"
-    ;;   (pulse first 2)
-    ;;   "Preparing second"
-    ;;   (pulse second 2)
-    ;;   (sleep (ticks->time 6)))
-    ))
+  (sleep 1)
+  (let [current-time (os.time :ingame)]
+    (each [_ {: tick &as alarm} (ipairs alarms)]
+      (set alarm.pid (-> tick
+                         (* 0.001)
+                         (+ current-time)
+                         (% 24.0)
+                         (os.setAlarm)))
+      (set (. start-alarms alarm.pid) alarm)))
+  (print "Started all alarms")
+  (while true
+    (let [( _ id) (os.pullEvent :alarm)
+          alarm (. start-alarms id)
+          redstone (. stop-alarms id)]
+      (if alarm (do (pulse alarm)
+                    (set (. start-alarms alarm.pid) nil))
+          redstone (do (peripheral.call redstone.name :setOutput redstone.side false)
+                       (set (. stop-alarms redstone.pid) nil)))))
+
+  (pulse {:name (relay 4)
+          :side :right})
+  (sleep (* 7 0.05))
+  (pulse {:name (relay 4)
+          :side :front})
+  )
 
 (when (not ...)
   (main))
