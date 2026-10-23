@@ -14,39 +14,78 @@
 (fn generator [number]
   (.. "rftoolspower:endergenic_" (tostring number)))
 
-(local alarms [{:pid nil
-                :tick 1
-                :name (relay 4)
-                :side :front}
-               {:pid nil
-                :tick 10
-                :name (relay 4)
-                :side :left}
-               {:pid nil
-                :tick 12
-                :name (relay 4)
-                :side :front}
-               {:pid nil
-                :tick 13
-                :name (relay 4)
-                :side :right}
-               {:pid nil
-                :tick 3
-                :name (relay 4)
-                :side :right}
-               {:pid nil
-                :tick 4
-                :name (relay 4)
-                :side :back}])
+(local alarms [{:name (relay 6)
+                :side :front
+                :tick 1}
+               {:name (relay 7)
+                :side :bottom
+                :tick 11}
+               {:name (relay 6)
+                :side :right
+                :tick 2}
+               {:name (relay 6)
+                :side :front
+                :tick 11}
+               {:name (relay 6)
+                :side :back
+                :tick 3}
+               {:name (relay 6)
+                :side :right
+                :tick 13}
+               {:name (relay 6)
+                :side :left
+                :tick 4}
+               {:name (relay 6)
+                :side :back
+                :tick 14}
+               {:name (relay 6)
+                :side :left
+                :tick 5}
+               {:name (relay 6)
+                :side :back
+                :tick 15}
+               {:name (relay 8)
+                :side :back
+                :tick 6}
+               {:name (relay 6)
+                :side :left
+                :tick 16}
+               {:name (relay 8)
+                :side :left
+                :tick 7}
+               {:name (relay 8)
+                :side :back
+                :tick 17}
+               {:name (relay 5)
+                :side :left
+                :tick 8}
+               {:name (relay 8)
+                :side :left
+                :tick 19}
+               {:name (relay 5)
+                :side :front
+                :tick 9}
+               {:name (relay 8)
+                :side :front
+                :tick 21}
+               {:name (relay 5)
+                :side :right
+                :tick 10}
+               {:name (relay 5)
+                :side :front
+                :tick 22}
+               {:name (relay 5)
+                :side :back
+                :tick 11}
+               {:name (relay 5)
+                :side :right
+                :tick 23}
+               ])
 
 (fn pulse [relay]
   (let [{: name : side } relay]
     (peripheral.call name :setOutput side true)
-    (set (. stop-alarms (os.setAlarm (+ (os.time :ingame) 0.001))) relay)))
-
-(local optimal-ticks 10)
-(local delta-ticks 2)
-(local redstone-pulse-ticks 2)
+    (set (. stop-alarms (os.setAlarm (+ (os.time :ingame) 0.01))) relay)))
 
 (fn main []
   (sleep 1)
@@ -66,14 +105,7 @@
       (if alarm (do (pulse alarm)
                     (set (. start-alarms alarm.pid) nil))
           redstone (do (peripheral.call redstone.name :setOutput redstone.side false)
-                       (set (. stop-alarms redstone.pid) nil)))))
-
-  (pulse {:name (relay 4)
-          :side :right})
-  (sleep (* 7 0.05))
-  (pulse {:name (relay 4)
-          :side :front})
-  )
+                       (set (. stop-alarms redstone.pid) nil))))))
 
 (when (not ...)
   (main))
