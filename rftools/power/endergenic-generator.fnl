@@ -1,8 +1,9 @@
-(local start-alarms [])
+(local current-alarms [])
+(local next-alarms [])
 (fn relay [number]
   (.. "redstone_relay_" (tostring number)))
 
-(local alarms [{:name (relay 6)
+(local timings [{:name (relay 6)
                 :side :front
                 :tick 1}
                {:name (relay 7)
@@ -65,28 +66,28 @@
                ])
 
 (fn pulse [relay]
-  (let [{: name : side } relay]
+  (let [{: name : side : tick &as alarm} relay]
     (peripheral.call name :setOutput side true)
     (sleep 0.1)
     (peripheral.call name :setOutput side false)))
 
 (fn init []
  (let [current-time (os.time :ingame)]
-    (each [_ {: tick &as alarm} (ipairs alarms)]
-      (set alarm.pid (-> tick
-                         (* 0.001)
-                         (+ (os.time :ingame))
-                         (% 24.0)
-                         (os.setAlarm)))
-      (set (. start-alarms alarm.pid) alarm))))
+    (each [_ {: tick &as alarm} (ipairs timings)]
+      (set (. current-alarms (-> tick
+                                (* 0.001)
+                                (+ (os.time :ingame))
+                                (% 24.0)
+                                (os.setAlarm))) alarm))))
+
 
 (fn worker [spawn]
   (while true
     (let [(_ id) (os.pullEvent :alarm)
-          alarm (. start-alarms id)]
+          alarm (. current-alarms id)]
       (when alarm
         (spawn (partial pulse alarm))
-        (set (. start-alarms alarm.pid) nil)))))
+        (set (. current-alarms id) nil)))))
 
 (fn main []
   (sleep 1)
